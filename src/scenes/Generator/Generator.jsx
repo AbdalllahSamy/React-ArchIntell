@@ -11,6 +11,7 @@ import Navbar from "scenes/navbar";
 import localStorage from "redux-persist/es/storage";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import TopBar from '../../components/TopBar';
 // import M1 from ""
 
 
@@ -137,10 +138,18 @@ const Generator = () => {
   ];
 
 
-
+  const [mode, setMode] = React.useState(
+    Boolean(localStorage.getItem("currentMode"))
+        ? localStorage.getItem("currentMode")
+        : "light"
+);
   return (
     <>
-
+      <TopBar
+                    open={open}
+                    handleDrawerOpen={handleDrawerOpen}
+                    setMode={setMode}
+                />
       <Box
         onSubmit={handleSubmit(onSubmit)}
         component="form"
@@ -156,6 +165,7 @@ const Generator = () => {
         autoComplete="off"
       >
 
+          
         <Stack direction={"row"} justifyContent={"space-between"} alignItems={"center"}>
           <Header
             isDashboard={true}
@@ -163,7 +173,6 @@ const Generator = () => {
             subTitle={"Welcome to your Projects"}
           />
         </Stack>
-        <Navbar />
         <SideBar open={open} handleDrawerOpen={handleDrawerOpen} handleDrawerClose={handleDrawerClose} />
         <Stack sx={{ gap: 2 }} direction={"row"} >
           <TextField

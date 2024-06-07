@@ -46,12 +46,12 @@ export const Project = () => {
             </Box> */}
             <Box sx={{ display: "flex", paddingRight: "6rem",paddingLeft: "2rem", paddingTop: "2rem" }}>
                 <CssBaseline />
-                {/* <TopBar
+                <TopBar
                     open={open}
                     handleDrawerOpen={handleDrawerOpen}
                     setMode={setMode}
-                /> */}
-                <Navbar />
+                />
+                {/* <Navbar /> */}
 
                 <SideBar open={open} handleDrawerOpen={handleDrawerOpen} handleDrawerClose={handleDrawerClose} />
 

@@ -18,7 +18,7 @@
 }
 
 /* Tailwind CSS custom rotate utilities */
-.rotate-45 {
+/* .rotate-45 {
   transform: rotate(45deg);
 }
 
@@ -80,7 +80,7 @@
 
 .-rotate-360 {
   transform: rotate(-360deg);
-}
+} */
 
 
 
