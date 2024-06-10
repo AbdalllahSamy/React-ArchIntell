@@ -94,7 +94,7 @@ const Generator = () => {
   const serverUrl = 'http://localhost:9595/graphql';
 
   const onSubmit = async () => {
-    try{
+    try {
       const designInput = {
         model_type: model,
         title: projectName,
@@ -108,12 +108,12 @@ const Generator = () => {
         variables: variables
       };
       console.log(token);
-  
+
       const headers = {
         'Authorization': `Bearer ${token}`,
         'Content-Type': 'application/json'
       };
-  
+
       const response = await axios.post(serverUrl, payload, {
         headers: headers
       });
@@ -121,10 +121,10 @@ const Generator = () => {
         console.log(response);
         // navigate("/projects");
       }
-    }catch(error){
+    } catch (error) {
       console.log("something went wrong");
     }
-    
+
   }
   const currencies = [
     {
@@ -140,16 +140,14 @@ const Generator = () => {
 
   const [mode, setMode] = React.useState(
     Boolean(localStorage.getItem("currentMode"))
-        ? localStorage.getItem("currentMode")
-        : "light"
-);
+      ? localStorage.getItem("currentMode")
+      : "light"
+  );
   return (
     <>
-      <TopBar
-                    open={open}
-                    handleDrawerOpen={handleDrawerOpen}
-                    setMode={setMode}
-                />
+      <Box>
+        <Navbar />
+      </Box>
       <Box
         onSubmit={handleSubmit(onSubmit)}
         component="form"
@@ -165,7 +163,7 @@ const Generator = () => {
         autoComplete="off"
       >
 
-          
+
         <Stack direction={"row"} justifyContent={"space-between"} alignItems={"center"}>
           <Header
             isDashboard={true}

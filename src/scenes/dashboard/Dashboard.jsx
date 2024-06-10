@@ -6,19 +6,15 @@ import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
 import FormControl from "@mui/material/FormControl";
-import FormControlLabel from "@mui/material/FormControlLabel";
-import InputLabel from "@mui/material/InputLabel";
-import MenuItem from "@mui/material/MenuItem";
-import Select from "@mui/material/Select";
 import TextField from "@mui/material/TextField";
 import { toast, ToastContainer } from 'react-toastify';
 import axios from "axios";
-// import { Box, Stack, Typography, useTheme } from "@mui/material";
 import Header from "../../components/Header";
 import React, { useEffect, useState } from "react";
 import { useTheme } from "@emotion/react";
-import { Link, Stack } from "@mui/material";
+import { Stack, Grid } from "@mui/material";
 import { useNavigate } from "react-router-dom";
+
 const Dashboard = () => {
   const theme = useTheme();
   const [open, setOpen] = React.useState(false);
@@ -27,40 +23,10 @@ const Dashboard = () => {
   const [project, setProject] = useState('');
   const navigate = useNavigate();
 
-  // const query = `
-  // query des {
-  //   designs {
-  //     _id
-  //     title
-  //     description
-  //     model_type
-  //     outputUrl2D
-  //     outputUrl3D
-  //     creator {
-  //       _id
-  //       username
-  //       email
-  //       image
-  //     }
-  //     comments {
-  //       _id
-  //       comment
-  //       username
-  //       createdAt
-  //     }
-  //     likes {
-  //       id
-  //       createdAt
-  //       username
-  //     }
-  //     createdAt
-  //   }
-  // }  
-  // `
   const query = `
   query {
     createdDesigns(userId: $userId) {
-        _id
+      _id
       title
       description
       model_type
@@ -85,8 +51,9 @@ const Dashboard = () => {
       }
       createdAt
     }
-  }  
-  `
+  }
+  `;
+  
   const serverUrl = 'http://localhost:9595/graphql';
   const token = `Bearer ${localStorage.getItem("token")}`;
 
@@ -122,7 +89,6 @@ const Dashboard = () => {
     fetchData();
   }, []);
 
-
   const handleClickOpen = () => {
     setOpen(true);
   };
@@ -130,6 +96,7 @@ const Dashboard = () => {
   const handleClose = () => {
     setOpen(false);
   };
+
   const handleCreate = () => {
     if (project === '') {
       toast.error("Please enter the project name", {
@@ -142,28 +109,18 @@ const Dashboard = () => {
     }
   };
 
-  const handleMaxWidthChange = (event) => {
-    setMaxWidth(event.target.value);
-  };
-
-  const handleFullWidthChange = (event) => {
-    setFullWidth(event.target.checked);
-  };
-
   return (
     <div>
-      <ToastContainer stacked />
-      <Stack
-        direction={"row"}
-        justifyContent={"space-between"}
-        alignItems={"center"}
-      >
-        <Header
-          isDashboard={true}
-          title={"My Projects"}
-          subTitle={"Welcome to your Projects"}
-        />
-        <React.Fragment>
+      <ToastContainer />
+      <Grid container spacing={2}>
+        <Grid item xs={12} sm={6}>
+          <Header
+            isDashboard={true}
+            title={"My Projects"}
+            subTitle={"Welcome to your Projects"}
+          />
+        </Grid>
+        <Grid item xs={12} sm={6} sx={{ textAlign: { xs: 'center', sm: 'right' } }}>
           <Button sx={{ textTransform: "capitalize" }} className="btn" type="submit" onClick={handleClickOpen}>
             <strong>Create New Project</strong>
             <div id="container-stars">
@@ -174,56 +131,44 @@ const Dashboard = () => {
               <div className="circle" />
             </div>
           </Button>
-          <Dialog
-            fullWidth={fullWidth}
-            // maxWidth={maxWidth}
-            open={open}
-            onClose={handleClose}
+        </Grid>
+      </Grid>
+      <Dialog
+        fullWidth={fullWidth}
+        maxWidth={maxWidth}
+        open={open}
+        onClose={handleClose}
+      >
+        <DialogTitle>New Project</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            Please enter the name of your new project.
+          </DialogContentText>
+          <Box
+            noValidate
+            component="form"
+            sx={{
+              display: "flex",
+              flexDirection: "column",
+              m: "auto",
+              width: "fit-content",
+            }}
           >
-            <DialogTitle>New Project</DialogTitle>
-            <DialogContent>
-              <DialogContentText>
-                You can set my maximum width and whether to adapt or not.
-              </DialogContentText>
-              <Box
-                noValidate
-                component="form"
-                sx={{
-                  display: "flex",
-                  flexDirection: "column",
-                  m: "auto",
-                  width: "fit-content",
-                }}
-              >
-                <FormControl sx={{ mt: 2, minWidth: 120 }}>
-                  <TextField
-
-                    label="Project Name"
-                    multiline
-                    maxRows={4}
-                    value={project}
-                    onChange={(e) => setProject(e.target.value)}
-                  />
-                </FormControl>
-              </Box>
-            </DialogContent>
-            <DialogActions>
-              <Button onClick={handleCreate}> Create</Button>
-            </DialogActions>
-          </Dialog>
-        </React.Fragment>
-
-        {/* <Box sx={{ textAlign: "right", mb: 1.3 }}>
-          <Button
-            sx={{ padding: "6px 8px", textTransform: "capitalize" }}
-            variant="contained"
-            color="primary"
-          >
-            <DownloadOutlined />
-            Download Reports
-          </Button>
-        </Box> */}
-      </Stack>
+            <FormControl sx={{ mt: 2, minWidth: 120 }}>
+              <TextField
+                label="Project Name"
+                multiline
+                maxRows={4}
+                value={project}
+                onChange={(e) => setProject(e.target.value)}
+              />
+            </FormControl>
+          </Box>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCreate}>Create</Button>
+        </DialogActions>
+      </Dialog>
     </div>
   );
 };

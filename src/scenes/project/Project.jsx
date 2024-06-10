@@ -41,22 +41,14 @@ export const Project = () => {
 
     return (
         <>
-            {/* <Box>
+            <Box>
                 <Navbar />
-            </Box> */}
-            <Box sx={{ display: "flex", paddingRight: "6rem",paddingLeft: "2rem", paddingTop: "2rem" }}>
-                <CssBaseline />
-                <TopBar
-                    open={open}
-                    handleDrawerOpen={handleDrawerOpen}
-                    setMode={setMode}
-                />
-                {/* <Navbar /> */}
-
+            </Box>
+            <Box sx={{ display: "flex", paddingRight: "6rem", paddingLeft: "2rem" }}>
                 <SideBar open={open} handleDrawerOpen={handleDrawerOpen} handleDrawerClose={handleDrawerClose} />
 
+
                 <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
-                    <DrawerHeader />
                     <Outlet />
                 </Box>
             </Box>
