@@ -45,12 +45,11 @@ const initialValuesRegister = {
 const initialValuesLogin = {
   email: "AhmedArafat@gmail.com",
   password: "AhmedArafat@gmail.com",
-  secretOrPrivateKey:"hellow world"
 };
 
 const queryLogin = `
-query log {
-  login(email:"hawary@cs.com",password:"123456"){
+query log($email: String!, $password: String!) {
+  login(email: $email, password: $password) {
     userId
     token
     username
@@ -59,8 +58,8 @@ query log {
 `;
 
 const querySearch = `
-query searchUser {
-  searchUser(userName:"saleh") {
+query searchUser($userName: String!) {
+  searchUser(userName: $userName) {
     _id
     username  
     email
@@ -78,7 +77,6 @@ query searchUser {
 }
 `;
 
-
 const serverUrl = 'http://localhost:9595/graphql';
 
 const Form = () => {
@@ -91,65 +89,100 @@ const Form = () => {
   const isLogin = pageType === "login";
   const isRegister = pageType === "register";
 
+  const queryRegister = `
+mutation createUser($userInput: UserInput!) {
+  createUser(userInput: $userInput) {
+    _id
+    username
+    email
+  }
+}
+`;
 
   const register = async (values, onSubmitProps) => {
-    // this allows us to send form info with image
-    const formData = new FormData();
-    for (let value in values) {
-      formData.append(value, values[value]);
-    }
-    formData.append("picturePath", values.picture.name);
+    const payload = {
+      query: queryRegister,
+      variables: {
+        userInput: {
+          username: values.firstName + values.lastName,
+          email: values.email,
+          password: values.password,
+        },
+      },
+    };
 
-    const savedUserResponse = await fetch(
-      "http://localhost:3001/auth/register",
-      {
-        method: "POST",
-        body: formData,
+    const headers = {
+      'Content-Type': 'application/json',
+    };
+
+    try {
+      const response = await axios.post(serverUrl, payload, {
+        headers: headers,
+      });
+
+      const savedUser = response.data;
+
+      if (savedUser) {
+        setPageType("login");
       }
-    );
-    const savedUser = await savedUserResponse.json();
-    // onSubmitProps.resetForm();
-
-    if (savedUser) {
-      setPageType("login");
+    } catch (error) {
+      console.error("Error during registration:", error);
     }
   };
 
   const login = async (values, onSubmitProps) => {
     const payload = {
       query: queryLogin,
-      variables: values
+      variables: {
+        email: values.email,
+        password: values.password,
+      },
     };
 
     const headers = {
-      'Content-Type': 'application/json'
+      'Content-Type': 'application/json',
     };
 
-    const response = await axios.post(serverUrl, payload, {
-      headers: headers
-    });
-    if (response) {
-      dispatch(
-        setLogin({
-          user: response.data.data.login.token,
-          token: response.data.data.login.userId,
-        })
-      );
-      const payloadUser = {
-        query: querySearch,
-      };
-      const token = `Bearer ${response.data.data.login.token}`;
-      const headersUser = {
-        'Authorization': token,
-        'Content-Type': 'application/json'
-      };
-      const responseUser = await axios.post(serverUrl, payloadUser, {
-        headers: headersUser
+    try {
+      const response = await axios.post(serverUrl, payload, {
+        headers: headers,
       });
-      localStorage.setItem('token', response.data.data.login.token);
-      localStorage.setItem('user', JSON.stringify(responseUser.data.data.searchUser));
-      console.log(JSON.parse(localStorage.getItem('user')));
-      navigate("/projects");
+
+      if (response.data) {
+        const loginData = response.data.data.login;
+
+        dispatch(
+          setLogin({
+            user: loginData.token,
+            token: loginData.userId,
+          })
+        );
+
+        const payloadUser = {
+          query: querySearch,
+          variables: {
+            userName: loginData.username,
+          },
+        };
+
+        const token = `Bearer ${loginData.token}`;
+        const headersUser = {
+          'Authorization': token,
+          'Content-Type': 'application/json',
+        };
+
+        const responseUser = await axios.post(serverUrl, payloadUser, {
+          headers: headersUser,
+        });
+
+        localStorage.setItem('token', loginData.token);
+        localStorage.setItem('user', JSON.stringify(responseUser.data.data.searchUser));
+        console.log(JSON.parse(localStorage.getItem('user')));
+
+        navigate("/projects");
+      }
+    } catch (error) {
+      console.error("Error during login:", error);
     }
   };
 

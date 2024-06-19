@@ -14,6 +14,9 @@ import React, { useEffect, useState } from "react";
 import { useTheme } from "@emotion/react";
 import { Stack, Grid } from "@mui/material";
 import { useNavigate } from "react-router-dom";
+import { Card } from './Card'
+import { FaPlus } from "react-icons/fa6";
+
 
 const Dashboard = () => {
   const theme = useTheme();
@@ -53,13 +56,14 @@ const Dashboard = () => {
     }
   }
   `;
-  
+
   const serverUrl = 'http://localhost:9595/graphql';
   const token = `Bearer ${localStorage.getItem("token")}`;
 
   useEffect(() => {
     const fetchData = async () => {
       const id = JSON.parse(localStorage.getItem("user"))._id;
+      console.log(id);
 
       try {
         const headers = {
@@ -108,6 +112,14 @@ const Dashboard = () => {
       navigate("/Generator");
     }
   };
+
+  const projects = [
+    { id: 1, title: "apartment - 3 rooms", timeAgo: "1 hour ago", image: "https://via.placeholder.com/150" },
+    { id: 2, title: "Modern Contemporary Living Room", timeAgo: "1 hour ago", image: "https://via.placeholder.com/150" },
+    { id: 3, title: "Condo - 1 Bedroom 2", timeAgo: "1 hour ago", image: "https://via.placeholder.com/150" },
+    { id: 4, title: "3d floor plan 1", timeAgo: "1 hour ago", image: "https://via.placeholder.com/150" },
+    { id: 5, title: "room", timeAgo: "1 hour ago", image: "https://via.placeholder.com/150" },
+  ];
 
   return (
     <div>
@@ -169,6 +181,16 @@ const Dashboard = () => {
           <Button onClick={handleCreate}>Create</Button>
         </DialogActions>
       </Dialog>
+      <div className="flex flex-wrap justify-center">
+        <div className="bg-gray-500 shadow-md rounded-lg p-4 m-4 w-64 flex items-center justify-center cursor-pointer" onClick={handleClickOpen}>
+          <div className="text-center">
+            <FaPlus className="text-[6rem]" />
+          </div>
+        </div>
+        {projects.map(project => (
+          <Card key={project.id} project={project} />
+        ))}
+      </div>
     </div>
   );
 };

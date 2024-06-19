@@ -9,11 +9,47 @@ const PostsWidget = ({ userId, isProfile = false }) => {
   const token = useSelector((state) => state.token);
 
   const getPosts = async () => {
-    const response = await fetch("http://localhost:3001/posts", {
-      method: "GET",
-      headers: { Authorization: `Bearer ${token}` },
+    const id = JSON.parse(localStorage.getItem("user"))._id;
+    const query = `
+    query {
+      createdDesigns(userId: "${id}") {
+        _id
+        title
+        description
+        model_type
+        outputUrl2D
+        outputUrl3D
+        creator {
+          _id
+          username
+          email
+          image
+        }
+        comments {
+          _id
+          comment
+          username
+          createdAt
+        }
+        likes {
+          id
+          createdAt
+          username
+        }
+        createdAt
+      }
+    }
+  `;
+    const response = await fetch("http://localhost:9595/graphql", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ query }),
     });
-    const data = await response.json();
+    const { data } = await response.json();
+    console.log(data);
     dispatch(setPosts({ posts: data }));
   };
 
@@ -31,6 +67,7 @@ const PostsWidget = ({ userId, isProfile = false }) => {
 
   useEffect(() => {
     if (isProfile) {
+      getPosts();
       getUserPosts();
     } else {
       getPosts();
@@ -39,7 +76,7 @@ const PostsWidget = ({ userId, isProfile = false }) => {
 
   return (
     <>
-      {posts.map(
+      {/* {posts.map(
         ({
           _id,
           userId,
@@ -65,7 +102,7 @@ const PostsWidget = ({ userId, isProfile = false }) => {
             comments={comments}
           />
         )
-      )}
+      )} */}
     </>
   );
 };

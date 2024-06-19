@@ -12,6 +12,8 @@ import localStorage from "redux-persist/es/storage";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import TopBar from '../../components/TopBar';
+import { useState } from "react";
+import { ZoomedImage } from "./ZoomedImage";
 // import M1 from ""
 
 
@@ -46,11 +48,22 @@ const Generator = () => {
   }
   const [model, setModel] = React.useState("2D");
   const [description, setDescription] = React.useState("");
+  const [zoomedImage, setZoomedImage] = useState(null);
+
   const handleDrawerClose = () => {
     setOpen(false);
   };
   const handleDrawerOpen = () => {
     setOpen(true);
+  };
+
+  const handleImageClick = (image) => {
+    setZoomedImage(image);
+  };
+
+
+  const handleCloseZoom = () => {
+    setZoomedImage(null);
   };
   const {
     register,
@@ -155,7 +168,7 @@ const Generator = () => {
           display: "flex",
           flexDirection: "column",
           gap: 3,
-          paddingTop: "7rem",
+          paddingTop: "1.5rem",
           paddingLeft: "7rem",
           paddingRight: "7rem",
         }}
@@ -225,8 +238,10 @@ const Generator = () => {
         </Box>
 
 
-
-
+        <div className="flex justify-center relative cursor-pointer" onClick={() => handleImageClick("https://th.bing.com/th/id/R.3ee1f23f777badad3cc9bea698935971?rik=LGFjMsaJaeWAjQ&pid=ImgRaw&r=0")}>
+          <img src="https://th.bing.com/th/id/R.3ee1f23f777badad3cc9bea698935971?rik=LGFjMsaJaeWAjQ&pid=ImgRaw&r=0" alt="img" className="w-1/4" />
+        </div>
+        {zoomedImage && <ZoomedImage src={zoomedImage} onClose={handleCloseZoom} />}
 
 
       </Box>
