@@ -22,9 +22,6 @@ const registerSchema = yup.object().shape({
   lastName: yup.string().required("required"),
   email: yup.string().email("invalid email").required("required"),
   password: yup.string().required("required"),
-  location: yup.string().required("required"),
-  occupation: yup.string().required("required"),
-  picture: yup.string().required("required"),
 });
 
 const loginSchema = yup.object().shape({
@@ -240,7 +237,7 @@ mutation createUser($userInput: UserInput!) {
                   helperText={touched.lastName && errors.lastName}
                   sx={{ gridColumn: "span 2" }}
                 />
-                <TextField
+                {/* <TextField
                   label="Location"
                   onBlur={handleBlur}
                   onChange={handleChange}
@@ -249,8 +246,8 @@ mutation createUser($userInput: UserInput!) {
                   error={Boolean(touched.location) && Boolean(errors.location)}
                   helperText={touched.location && errors.location}
                   sx={{ gridColumn: "span 4" }}
-                />
-                <TextField
+                /> */}
+                {/* <TextField
                   label="Occupation"
                   onBlur={handleBlur}
                   onChange={handleChange}
@@ -261,8 +258,8 @@ mutation createUser($userInput: UserInput!) {
                   }
                   helperText={touched.occupation && errors.occupation}
                   sx={{ gridColumn: "span 4" }}
-                />
-                <Box
+                /> */}
+                {/* <Box
                   gridColumn="span 4"
                   border={`1px solid ${palette.neutral.medium}`}
                   borderRadius="5px"
@@ -294,7 +291,7 @@ mutation createUser($userInput: UserInput!) {
                       </Box>
                     )}
                   </Dropzone>
-                </Box>
+                </Box> */}
               </>
             )}
 
