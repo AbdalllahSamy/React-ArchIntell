@@ -1,44 +1,43 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { setPosts } from "state";
 import PostWidget from "./PostWidget";
 
 const PostsWidget = ({ userId, isProfile = false }) => {
   const dispatch = useDispatch();
-  const posts = useSelector((state) => state.posts);
+  // const posts = useSelector((state) => state.posts);
   const token = useSelector((state) => state.token);
+  const [posts, setPosts] = useState([]);
 
   const getPosts = async () => {
     const id = JSON.parse(localStorage.getItem("user"))._id;
+    console.log(id);
     const query = `
-    query {
-      createdDesigns(userId: "${id}") {
+    query des{
+  designs{
+    _id
+    title
+    description
+    model_type
+    outputUrl2D
+    outputUrl3D
+    creator {
         _id
-        title
-        description
-        model_type
-        outputUrl2D
-        outputUrl3D
-        creator {
-          _id
-          username
-          email
-          image
-        }
-        comments {
-          _id
-          comment
-          username
-          createdAt
-        }
-        likes {
-          id
-          createdAt
-          username
-        }
-        createdAt
-      }
     }
+    comments {
+      _id
+      comment
+      username
+      createdAt
+    }
+    likes {
+      id
+      createdAt
+      username
+    }
+    createdAt
+    }
+  }
   `;
     const response = await fetch("http://localhost:9595/graphql", {
       method: "POST",
@@ -49,23 +48,29 @@ const PostsWidget = ({ userId, isProfile = false }) => {
       body: JSON.stringify({ query }),
     });
     const { data } = await response.json();
-    console.log(data);
-    dispatch(setPosts({ posts: data }));
+    const designs = data.designs.map(design => ({
+      ...design,
+      image: design.outputUrl3D ? `data:image/png;base64,${design.outputUrl3D}` : null,
+      image2D: design.outputUrl2D ? `data:image/png;base64,${design.outputUrl2D}` : null,
+    }));
+    console.log(designs);
+    setPosts(designs);
   };
 
   const getUserPosts = async () => {
-    const response = await fetch(
-      `http://localhost:3001/posts/${userId}/posts`,
-      {
-        method: "GET",
-        headers: { Authorization: `Bearer ${token}` },
-      }
-    );
-    const data = await response.json();
-    dispatch(setPosts({ posts: data }));
+    // const response = await fetch(
+    //   `http://localhost:3001/posts/${userId}/posts`,
+    //   {
+    //     method: "GET",
+    //     headers: { Authorization: `Bearer ${token}` },
+    //   }
+    // );
+    // const data = await response.json();
+    // dispatch(setPosts({ posts: data }));
   };
 
   useEffect(() => {
+    console.log("posts", posts);
     if (isProfile) {
       getPosts();
       getUserPosts();
@@ -76,33 +81,24 @@ const PostsWidget = ({ userId, isProfile = false }) => {
 
   return (
     <>
-      {/* {posts.map(
-        ({
-          _id,
-          userId,
-          firstName,
-          lastName,
-          description,
-          location,
-          picturePath,
-          userPicturePath,
-          likes,
-          comments,
-        }) => (
+      {posts ? (
+        posts.map((post) => (
           <PostWidget
-            key={_id}
-            postId={_id}
-            postUserId={userId}
-            name={`${firstName} ${lastName}`}
-            description={description}
-            location={location}
-            picturePath={picturePath}
-            userPicturePath={userPicturePath}
-            likes={likes}
-            comments={comments}
+            key={post._id}
+            postId={post._id}
+            // postUserId={post.creator._id} // Assuming creator._id is the userId
+            // name={`${post.creator.username}`} // Adjust as per your data structure
+            description={post.description}
+            // location={post.creator.location} // Assuming creator has a location field
+            picturePath={post.image ? post.image : post.image2D} // Adjust based on your data structure
+            // userPicturePath={post.creator.image} // Assuming creator has an image field
+            likes={post.likes}
+            comments={post.comments}
           />
-        )
-      )} */}
+        ))
+      ) : (
+        <p>Loading posts...</p>
+      )}
     </>
   );
 };

@@ -59,7 +59,7 @@ const MyPostWidget = ({ picturePath }) => {
 
   return (
     <WidgetWrapper>
-      <FlexBetween gap="1.5rem">
+      {/* <FlexBetween gap="1.5rem">
         <UserImage image={picturePath} />
         <InputBase
           placeholder="What's on your mind..."
@@ -72,8 +72,8 @@ const MyPostWidget = ({ picturePath }) => {
             padding: "1rem 2rem",
           }}
         />
-      </FlexBetween>
-      {isImage && (
+      </FlexBetween> */}
+      {/* {isImage && (
         <Box
           border={`1px solid ${medium}`}
           borderRadius="5px"
@@ -116,11 +116,11 @@ const MyPostWidget = ({ picturePath }) => {
             )}
           </Dropzone>
         </Box>
-      )}
+      )} */}
 
-      <Divider sx={{ margin: "1.25rem 0" }} />
+      {/* <Divider sx={{ margin: "1.25rem 0" }} /> */}
 
-      <FlexBetween>
+      {/* <FlexBetween>
         <FlexBetween gap="0.25rem" onClick={() => setIsImage(!isImage)}>
           <ImageOutlined sx={{ color: mediumMain }} />
           <Typography
@@ -165,7 +165,7 @@ const MyPostWidget = ({ picturePath }) => {
         >
           POST
         </Button>
-      </FlexBetween>
+      </FlexBetween> */}
     </WidgetWrapper>
   );
 };

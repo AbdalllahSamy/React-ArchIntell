@@ -24,12 +24,12 @@ const UserWidget = ({ userId, picturePath }) => {
   const main = palette.neutral.main;
 
   const getUser = async () => {
-    const response = await fetch(`http://localhost:3001/users/${userId}`, {
-      method: "GET",
-      headers: { Authorization: `Bearer ${token}` },
-    });
-    const data = await response.json();
-    setUser(data);
+    // const response = await fetch(`http://localhost:3001/users/${userId}`, {
+    //   method: "GET",
+    //   headers: { Authorization: `Bearer ${token}` },
+    // });
+    // const data = await response.json();
+    // setUser(data);
   };
 
   useEffect(() => {

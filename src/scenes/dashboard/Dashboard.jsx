@@ -25,58 +25,60 @@ const Dashboard = () => {
   const [maxWidth, setMaxWidth] = React.useState("sm");
   const [project, setProject] = useState('');
   const navigate = useNavigate();
+  const [projects, setProjects] = useState([]);
 
   const query = `
-  query {
-    createdDesigns(userId: $userId) {
+  query($userId: ID!) {
+  createdDesigns(userId: $userId) {
       _id
-      title
-      description
-      model_type
-      outputUrl2D
-      outputUrl3D
-      creator {
-        _id
-        username
-        email
-        image
-      }
-      comments {
-        _id
-        comment
-        username
-        createdAt
-      }
-      likes {
-        id
-        createdAt
-        username
-      }
+    title
+    description
+    model_type
+    outputUrl2D
+    outputUrl3D
+    creator {
+      _id
+    }
+    comments {
+      _id
+      comment
+      username
       createdAt
     }
+    likes {
+      id
+      createdAt
+      username
+    }
+    createdAt
+
   }
-  `;
+}
+`;
 
   const serverUrl = 'http://localhost:9595/graphql';
   const token = `Bearer ${localStorage.getItem("token")}`;
 
   useEffect(() => {
     const fetchData = async () => {
-      const id = JSON.parse(localStorage.getItem("user"))._id;
+      const user = JSON.parse(localStorage.getItem("user"));
+      const id = user ? user._id : null;
       console.log(id);
+
+      if (!id) {
+        console.error('User ID not found in local storage');
+        return;
+      }
 
       try {
         const headers = {
           'Authorization': token,
           'Content-Type': 'application/json'
         };
-        const designInput = {
+        const variables = {
           userId: id
         };
 
-        const variables = {
-          userId: designInput
-        };
         const payload = {
           query: query,
           variables: variables
@@ -84,7 +86,15 @@ const Dashboard = () => {
         const response = await axios.post(serverUrl, payload, {
           headers: headers
         });
-        console.log(response);
+        console.log("designs", response);
+        const projectsData = response.data.data.createdDesigns.map(design => ({
+          ...design,
+          image: design.outputUrl3D ? `data:image/png;base64,${design.outputUrl3D}` : null,
+          image2D: design.outputUrl2D ? `data:image/png;base64,${design.outputUrl2D}` : null 
+        }));
+        console.log("new",projectsData);
+
+        setProjects(projectsData);
       } catch (error) {
         console.error('Error fetching data:', error);
       }
@@ -113,13 +123,13 @@ const Dashboard = () => {
     }
   };
 
-  const projects = [
-    { id: 1, title: "apartment - 3 rooms", timeAgo: "1 hour ago", image: "https://via.placeholder.com/150" },
-    { id: 2, title: "Modern Contemporary Living Room", timeAgo: "1 hour ago", image: "https://via.placeholder.com/150" },
-    { id: 3, title: "Condo - 1 Bedroom 2", timeAgo: "1 hour ago", image: "https://via.placeholder.com/150" },
-    { id: 4, title: "3d floor plan 1", timeAgo: "1 hour ago", image: "https://via.placeholder.com/150" },
-    { id: 5, title: "room", timeAgo: "1 hour ago", image: "https://via.placeholder.com/150" },
-  ];
+  // const projects = [
+  //   { id: 1, title: "apartment - 3 rooms", timeAgo: "1 hour ago", image: "https://via.placeholder.com/150" },
+  //   { id: 2, title: "Modern Contemporary Living Room", timeAgo: "1 hour ago", image: "https://via.placeholder.com/150" },
+  //   { id: 3, title: "Condo - 1 Bedroom 2", timeAgo: "1 hour ago", image: "https://via.placeholder.com/150" },
+  //   { id: 4, title: "3d floor plan 1", timeAgo: "1 hour ago", image: "https://via.placeholder.com/150" },
+  //   { id: 5, title: "room", timeAgo: "1 hour ago", image: "https://via.placeholder.com/150" },
+  // ];
 
   return (
     <div>
@@ -188,7 +198,7 @@ const Dashboard = () => {
           </div>
         </div>
         {projects.map(project => (
-          <Card key={project.id} project={project} />
+          <Card key={project._id} project={project} />
         ))}
       </div>
     </div>
