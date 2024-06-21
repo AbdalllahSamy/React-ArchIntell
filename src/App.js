@@ -13,6 +13,8 @@ import CardDetails  from "scenes/homePage/CardDetails";
 import Dashboard from "scenes/dashboard/Dashboard";
 import Generator from "scenes/Generator/Generator";
 import "react-toastify/dist/ReactToastify.css";
+import EditePage from "scenes/editepage/EditePage";
+
 
 function App() {
   const mode = useSelector((state) => state.mode);
@@ -44,6 +46,7 @@ function App() {
               element={isAuth ? <Project /> : <Navigate to="/login" />}
             >
               <Route index element={<Dashboard />} />
+              <Route path="EditePage" element={<EditePage />} />
             </Route>
             <Route path="/post/:postId" element={<CardDetails />} />
           </Routes>

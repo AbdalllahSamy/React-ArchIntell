@@ -1,81 +1,85 @@
-import React from 'react'
-import { CiShare1 } from "react-icons/ci";
-import { FaUserFriends } from "react-icons/fa";
+import React from 'react';
+import EditIcon from '@mui/icons-material/AutoFixHigh';
 import { MdDelete } from "react-icons/md";
 import axios from 'axios';
-
-
+import { useNavigate } from 'react-router-dom';
 
 export const Card = ({ project }) => {
+    const navigate = useNavigate();
 
     const query = `
-  mutation deletDesign($designId: String!) {
-    deletDesign(designId: $designId) {
-      _id
-      title
-      description
-      model_type
-      outputUrl2D
-      outputUrl3D
-      creator {
-        _id
-        username
-        email
-        image
-      }
-      comments {
-        _id
-        comment
-        username
-        createdAt
-      }
-      likes {
-        id
-        createdAt
-        username
-      }
-      createdAt
-    }
-  }
-`;
+        mutation deleteDesign($designId: String!) {
+            deleteDesign(designId: $designId) {
+                _id
+                title
+                description
+                model_type
+                outputUrl2D
+                outputUrl3D
+                creator {
+                    _id
+                    username
+                    email
+                    image
+                }
+                comments {
+                    _id
+                    comment
+                    username
+                    createdAt
+                }
+                likes {
+                    id
+                    createdAt
+                    username
+                }
+                createdAt
+            }
+        }
+    `;
 
     const serverUrl = 'http://localhost:9595/graphql';
-    
+
     const deletePost = async (e, designId) => {
         e.preventDefault();
         try {
             const token = localStorage.getItem('token');
-            // const tokenPromise = localStorage.getItem('token');
-            // const token = await tokenPromise;
+            if (!token) {
+                throw new Error("No authentication token found");
+            }
+
             const payload = {
                 query: query,
-                variables: {
-                    designId: designId
-                }
+                variables: { designId: designId }
             };
-
-            console.log('Design Input:', project);
-            console.log('Design ID:', designId);
 
             const headers = {
                 'Authorization': `Bearer ${token}`,
                 'Content-Type': 'application/json'
             };
 
-            const response = await axios.post(serverUrl, payload, { headers: headers });
-            
-            // console.log('Response:', transformedDesign);
-            if (response) {
-                if (response.data.errors) {
-                    console.error("GraphQL Errors:", response.data.errors);
-                } else {
-                    console.log("Mutation Response:", response.data);
-                }
+            console.log('Request Payload:', payload);
+            console.log('Request Headers:', headers);
+
+            const response = await axios.post(serverUrl, payload, { headers });
+
+            if (response.data.errors) {
+                console.error("GraphQL Errors:", response.data.errors);
+            } else {
+                console.log("Mutation Response:", response.data.data.deleteDesign);
+                // Update the UI to remove the deleted design
             }
         } catch (error) {
-            console.error("Something went wrong", error.response ? error.response.data : error);
+            if (error.response) {
+                console.error("Response Error:", error.response.data);
+            } else if (error.request) {
+                console.error("Request Error:", error.request);
+            } else {
+                console.error("Error:", error.message);
+            }
         }
     };
+
     const formatDate = (timestamp) => {
         const date = new Date(timestamp);
         const day = date.getDate().toString().padStart(2, '0'); // Ensure two-digit format
@@ -83,6 +87,7 @@ export const Card = ({ project }) => {
         const year = date.getFullYear();
         return `${day}/${month}/${year}`;
     };
+
     return (
         <div className="bg-white shadow-md rounded-lg p-4 m-4 w-64">
             <div className="h-40 bg-gray-200 rounded-t-lg overflow-hidden">
@@ -96,10 +101,16 @@ export const Card = ({ project }) => {
                 <button className="text-blue-500 text-xl mr-2 hover:text-blue-700" onClick={(e) => deletePost(e, project._id)}>
                     <MdDelete />
                 </button>
-                <button className="text-blue-500 text-xl hover:text-blue-700">
-                    <FaUserFriends />
+                <button 
+                    className="text-blue-500 text-xl hover:text-blue-700" 
+                    onClick={() => navigate(`/projects/EditePage`)}
+                    style={{ position: 'relative' }}
+                >
+                    <EditIcon />
                 </button>
             </div>
         </div>
-    )
-}
+    );
+};
+
+export default Card;

@@ -7,7 +7,7 @@ import { LeftLine, RightLine } from "./design/Pricing";
 const Pricing = () => {
   return (
     <Section className="overflow-hidden" id="pricing">
-      <div className="container relative z-2">
+      {/* <div className="container relative z-2">
         <div className="hidden relative justify-center mb-[6.5rem] lg:flex">
           <img
             src={smallSphere}
@@ -46,7 +46,7 @@ const Pricing = () => {
             See the full details
           </a>
         </div>
-      </div>
+      </div> */}
     </Section>
   );
 };

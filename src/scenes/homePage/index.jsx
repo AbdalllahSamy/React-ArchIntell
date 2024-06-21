@@ -138,7 +138,7 @@ const HomePage = () => {
 
         <div className="mt-10">
           <FormField
-            labelName="Search posts"
+            labelName=""
             type="text"
             name="text"
             placeholder="Search something..."

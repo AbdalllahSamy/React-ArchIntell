@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useState } from "react";
 import List from "@mui/material/List";
 import Divider from "@mui/material/Divider";
 import IconButton from "@mui/material/IconButton";
@@ -8,18 +8,13 @@ import ListItem from "@mui/material/ListItem";
 import ListItemButton from "@mui/material/ListItemButton";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
-import { Avatar, styled, useTheme, Typography, Tooltip } from "@mui/material";
+import { Avatar, styled, useTheme, Typography, Tooltip, Box } from "@mui/material";
 import MuiDrawer from "@mui/material/Drawer";
-import HomeOutlinedIcon from "@mui/icons-material/HomeOutlined";
-import PeopleOutlinedIcon from "@mui/icons-material/PeopleOutlined";
-import ContactsOutlinedIcon from "@mui/icons-material/ContactsOutlined";
-import ReceiptOutlinedIcon from "@mui/icons-material/ReceiptOutlined";
-
-
+import FolderCopyOutlined from "@mui/icons-material/FolderCopyOutlined";
+import PeopleAltOutlined from "@mui/icons-material/PeopleAltOutlined";
+import SettingsOutlined from "@mui/icons-material/SettingsOutlined";
 import { useLocation, useNavigate } from "react-router-dom";
 import { grey } from "@mui/material/colors";
-import SettingsOutlined from "@mui/icons-material/SettingsOutlined";
-import { AutoAwesome, FolderCopyOutlined, People, PeopleAltOutlined } from "@mui/icons-material";
 
 const drawerWidth = 240;
 const openedMixin = (theme) => ({
@@ -45,7 +40,6 @@ const closedMixin = (theme) => ({
 
 const Drawer = styled(MuiDrawer, {
   shouldForwardProp: (prop) => prop !== "open",
-  // @ts-ignore
 })(({ theme, open }) => ({
   width: drawerWidth,
   flexShrink: 0,
@@ -66,47 +60,37 @@ const DrawerHeader = styled("div")(({ theme }) => ({
   alignItems: "center",
   justifyContent: "flex-end",
   padding: theme.spacing(0, 1),
-  // necessary for content to be below app bar
   ...theme.mixins.toolbar,
 }));
 
 const Array1 = [
   { text: "My Projects", icon: <FolderCopyOutlined />, path: "/projects" },
-  {
-    text: "Design Community",
-    icon: <PeopleAltOutlined />,
-    path: "/home",
-  },
-  {
-    text: "settings",
-    icon: <SettingsOutlined />,
-    path: "/Sitting",
-  },
+  { text: "Design Community", icon: <PeopleAltOutlined />, path: "/home" },
+  { text: "Settings", icon: <SettingsOutlined />, path: "/settings" },
 ];
 
-// const Array2 = [
-//   { text: "Profile Form", icon: <PersonOutlinedIcon />, path: "/form" },
-//   { text: "Calendar", icon: <CalendarTodayOutlinedIcon />, path: "/calendar" },
-//   {
-//     text: "FAQ Page",
-//     icon: <HelpOutlineOutlinedIcon />,
-//     path: "/faq",
-//   },
-// ];
-
-// const Array3 = [
-//   { text: "Bar Chart", icon: <BarChartOutlinedIcon />, path: "/bar" },
-//   { text: "Pie Chart", icon: <PieChartOutlineOutlinedIcon />, path: "/pie" },
-//   { text: "Line Chart", icon: <TimelineOutlinedIcon />, path: "/line" },
-//   { text: "Geography Chart", icon: <MapOutlinedIcon />, path: "/geography" },
-// ];
-
 const SideBar = ({ open, handleDrawerClose, handleDrawerOpen }) => {
-  let location = useLocation();
+  const location = useLocation();
   const navigate = useNavigate();
   const theme = useTheme();
   const user = JSON.parse(localStorage.getItem('user'));
-  
+
+  const [image, setImage] = useState(user.image);
+
+  const handleImageChange = (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImage(reader.result);
+        // Optionally, save the image to localStorage or update the user state
+        // user.image = reader.result;
+        // localStorage.setItem('user', JSON.stringify(user));
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
   return (
     <Drawer variant="permanent" open={open}>
       <DrawerHeader>
@@ -116,19 +100,41 @@ const SideBar = ({ open, handleDrawerClose, handleDrawerOpen }) => {
       </DrawerHeader>
 
       <Divider />
-      <Avatar
+      
+      <Box
         sx={{
+          position: 'relative',
           mx: "auto",
           width: open ? 88 : 44,
           height: open ? 88 : 44,
           my: 1,
-          // border: "3px solid #00FF00 ",
-          // backgroundColor:  linear-gradient(90deg,#03a9f4,#f441a5,#03a9f4);
-          transition: "0.25s",
         }}
-        alt="Profile"
-        src={user.image}
-      />
+      >
+        <Avatar
+          sx={{
+            width: "100%",
+            height: "100%",
+            transition: "0.25s",
+            cursor: "pointer"
+          }}
+          alt="Profile"
+          src={image}
+        />
+        <input
+          type="file"
+          accept="image/*"
+          onChange={handleImageChange}
+          style={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            width: '100%',
+            height: '100%',
+            opacity: 0,
+            cursor: 'pointer',
+          }}
+        />
+      </Box>
       <Typography
         align="center"
         sx={{ fontSize: open ? 17 : 0, transition: "0.25s" }}
@@ -186,88 +192,6 @@ const SideBar = ({ open, handleDrawerClose, handleDrawerOpen }) => {
           </ListItem>
         ))}
       </List>
-
-      <Divider />
-
-      {/* <List>
-        {Array2.map((item) => (
-          <ListItem key={item.path} disablePadding sx={{ display: "block" }}>
-            <Tooltip title={open ? null : item.text} placement="left">
-              <ListItemButton
-                onClick={() => {
-                  navigate(item.path);
-                }}
-                sx={{
-                  minHeight: 48,
-                  justifyContent: open ? "initial" : "center",
-                  px: 2.5,
-                  bgcolor:
-                    location.pathname === item.path
-                      ? theme.palette.mode === "dark"
-                        ? grey[800]
-                        : grey[300]
-                      : null,
-                }}
-              >
-                <ListItemIcon
-                  sx={{
-                    minWidth: 0,
-                    mr: open ? 3 : "auto",
-                    justifyContent: "center",
-                  }}
-                >
-                  {item.icon}
-                </ListItemIcon>
-                <ListItemText
-                  primary={item.text}
-                  sx={{ opacity: open ? 1 : 0 }}
-                />
-              </ListItemButton>
-            </Tooltip>
-          </ListItem>
-        ))}
-      </List>
-
-      <Divider /> */}
-
-      {/* <List>
-        {Array3.map((item) => (
-          <ListItem key={item.path} disablePadding sx={{ display: "block" }}>
-            <Tooltip title={open ? null : item.text} placement="left">
-              <ListItemButton
-                onClick={() => {
-                  navigate(item.path);
-                }}
-                sx={{
-                  minHeight: 48,
-                  justifyContent: open ? "initial" : "center",
-                  px: 2.5,
-                  bgcolor:
-                    location.pathname === item.path
-                      ? theme.palette.mode === "dark"
-                        ? grey[800]
-                        : grey[300]
-                      : null,
-                }}
-              >
-                <ListItemIcon
-                  sx={{
-                    minWidth: 0,
-                    mr: open ? 3 : "auto",
-                    justifyContent: "center",
-                  }}
-                >
-                  {item.icon}
-                </ListItemIcon>
-                <ListItemText
-                  primary={item.text}
-                  sx={{ opacity: open ? 1 : 0 }}
-                />
-              </ListItemButton>
-            </Tooltip>
-          </ListItem>
-        ))}
-      </List> */}
     </Drawer>
   );
 };
