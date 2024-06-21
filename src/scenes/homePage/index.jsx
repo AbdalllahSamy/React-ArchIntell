@@ -8,6 +8,7 @@ import PostsWidget from "scenes/widgets/PostsWidget";
 import AdvertWidget from "scenes/widgets/AdvertWidget";
 import FriendListWidget from "scenes/widgets/FriendListWidget";
 import SideBar from "components/SideBar";
+import { Link } from 'react-router-dom';
 import { Button, Stack, useTheme } from "@mui/material";
 import FormField from './../../components/FormField';
 import Card from './../../components/Card';
@@ -16,7 +17,10 @@ import Loader from './../../components/Loader';
 const RenderCards = ({ data, title }) => {
   if (data?.length > 0) {
     return (
-      data.map((post) => <Card key={post._id} post={post} />)
+      data.map((post) => (
+        
+          <Card post={post} key={post._id} />
+      ))
     );
   }
 

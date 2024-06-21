@@ -9,6 +9,7 @@ import { CssBaseline, ThemeProvider } from "@mui/material";
 import { createTheme } from "@mui/material/styles";
 import { themeSettings } from "./theme";
 import { Project } from "scenes/project/Project";
+import CardDetails  from "scenes/homePage/CardDetails";
 import Dashboard from "scenes/dashboard/Dashboard";
 import Generator from "scenes/Generator/Generator";
 import "react-toastify/dist/ReactToastify.css";
@@ -44,6 +45,7 @@ function App() {
             >
               <Route index element={<Dashboard />} />
             </Route>
+            <Route path="/post/:postId" element={<CardDetails />} />
           </Routes>
         </ThemeProvider>
       </BrowserRouter>
