@@ -8,7 +8,7 @@ export const Card = ({ project }) => {
     const navigate = useNavigate();
 
     const query = `
-        mutation deleteDesign($designId: String!) {
+        mutation deleteDesign($designId: ID!) {
             deleteDesign(designId: $designId) {
                 _id
                 title
