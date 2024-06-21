@@ -125,7 +125,7 @@ const SideBar = ({ open, handleDrawerClose, handleDrawerOpen }) => {
           accept="image/*"
           onChange={handleImageChange}
           style={{
-            position: 'absolute',
+            // position: 'absolute',
             top: 0,
             left: 0,
             width: '100%',

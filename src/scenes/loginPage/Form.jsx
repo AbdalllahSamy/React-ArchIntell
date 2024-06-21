@@ -13,6 +13,8 @@ import * as yup from "yup";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { setLogin } from "state";
+import { toast, ToastContainer } from 'react-toastify';
+
 import Dropzone from "react-dropzone";
 import FlexBetween from "components/FlexBetween";
 import axios from "axios";
@@ -55,8 +57,8 @@ query log($email: String!, $password: String!) {
 `;
 
 const querySearch = `
-query searchUser($userName: String!) {
-  searchUser(userName: $userName) {
+query searchUserName($userName: String!) {
+  searchUserName(userName: $userName) {
     _id
     username  
     email
@@ -173,13 +175,19 @@ mutation createUser($userInput: UserInput!) {
         });
 
         localStorage.setItem('token', loginData.token);
-        localStorage.setItem('user', JSON.stringify(responseUser.data.data.searchUser));
+        localStorage.setItem('user', JSON.stringify(responseUser.data.data.searchUserName));
         console.log(JSON.parse(localStorage.getItem('user')));
 
         navigate("/projects");
+      } else{
+        toast.error("Email or password is wrong, Please try again", {
+          position: "top-left"
+        });
       }
     } catch (error) {
-      console.error("Error during login:", error);
+      toast.error("Email or password is wrong, Please try again", {
+        position: "top-left"
+      });
     }
   };
 
@@ -189,6 +197,8 @@ mutation createUser($userInput: UserInput!) {
   };
 
   return (
+    <>
+    <ToastContainer stacked />
     <Formik
       onSubmit={handleFormSubmit}
       initialValues={isLogin ? initialValuesLogin : initialValuesRegister}
@@ -355,6 +365,7 @@ mutation createUser($userInput: UserInput!) {
         </form>
       )}
     </Formik>
+    </>
   );
 };
 
