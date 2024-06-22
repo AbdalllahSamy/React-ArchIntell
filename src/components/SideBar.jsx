@@ -15,6 +15,7 @@ import PeopleAltOutlined from "@mui/icons-material/PeopleAltOutlined";
 import SettingsOutlined from "@mui/icons-material/SettingsOutlined";
 import { useLocation, useNavigate } from "react-router-dom";
 import { grey } from "@mui/material/colors";
+import axios from "axios";
 
 const drawerWidth = 240;
 const openedMixin = (theme) => ({
@@ -77,12 +78,49 @@ const SideBar = ({ open, handleDrawerClose, handleDrawerOpen }) => {
 
   const [image, setImage] = useState(user.image);
 
-  const handleImageChange = (event) => {
+  const handleImageChange = async (event) => {
+    const token = await localStorage.getItem('token');
     const file = event.target.files[0];
+    const userId = user._id ? user._id : null;
     if (file) {
       const reader = new FileReader();
-      reader.onloadend = () => {
-        setImage(reader.result);
+      reader.onloadend = async () => {
+        const uploadProfilePhotoMutation = `
+  mutation uploadProfilePhoto($userId: ID!, $photo: String!) {
+    uploadProfilePhoto(userId: $userId, photo: $photo) {
+      _id
+      username
+      email
+      image
+      createdDesigns {
+        _id
+      }
+    }
+  }
+`;
+        const variables = {
+          userId: userId,
+          photo: file.name
+        };
+
+        const payload = {
+          query: uploadProfilePhotoMutation,
+          variables: variables
+        };
+
+        const headers = {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        };
+
+        try {
+          const response = await axios.post('http://localhost:9595/graphql', payload, { headers: headers });
+          console.log('Response:', response.data.data.uploadProfilePhoto);
+          setImage(reader.result);
+          localStorage.setItem('user', JSON.stringify(response.data.data.uploadProfilePhoto))
+        } catch (error) {
+          console.log(error);
+        }
         // Optionally, save the image to localStorage or update the user state
         // user.image = reader.result;
         // localStorage.setItem('user', JSON.stringify(user));
@@ -100,7 +138,7 @@ const SideBar = ({ open, handleDrawerClose, handleDrawerOpen }) => {
       </DrawerHeader>
 
       <Divider />
-      
+
       <Box
         sx={{
           position: 'relative',
@@ -125,7 +163,7 @@ const SideBar = ({ open, handleDrawerClose, handleDrawerOpen }) => {
           accept="image/*"
           onChange={handleImageChange}
           style={{
-            // position: 'absolute',
+            position: 'absolute',
             top: 0,
             left: 0,
             width: '100%',

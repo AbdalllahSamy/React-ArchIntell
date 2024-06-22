@@ -4,7 +4,7 @@ import { MdDelete } from "react-icons/md";
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 
-export const Card = ({ project }) => {
+export const Card = ({ project, onDelete }) => {
     const navigate = useNavigate();
 
     const query = `
@@ -67,6 +67,7 @@ export const Card = ({ project }) => {
                 console.error("GraphQL Errors:", response.data.errors);
             } else {
                 console.log("Mutation Response:", response.data.data.deleteDesign);
+                onDelete(designId);
                 // Update the UI to remove the deleted design
             }
         } catch (error) {
@@ -103,7 +104,7 @@ export const Card = ({ project }) => {
                 </button>
                 <button 
                     className="text-blue-500 text-xl hover:text-blue-700" 
-                    onClick={() => navigate(`/projects/EditePage`)}
+                    onClick={() => {navigate(`/projects/${project._id}`)}}
                     style={{ position: 'relative' }}
                 >
                     <EditIcon />

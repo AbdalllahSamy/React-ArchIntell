@@ -111,6 +111,10 @@ const Dashboard = () => {
     setOpen(false);
   };
 
+  const handleDeleteProject = (designId) => {
+    setProjects((prevProjects) => prevProjects.filter(project => project._id !== designId));
+};
+
   const handleCreate = () => {
     if (project === '') {
       toast.error("Please enter the project name", {
@@ -198,7 +202,7 @@ const Dashboard = () => {
           </div>
         </div>
         {projects.map(project => (
-          <Card key={project._id} project={project} />
+          <Card key={project._id} project={project} onDelete={handleDeleteProject} />
         ))}
       </div>
     </div>

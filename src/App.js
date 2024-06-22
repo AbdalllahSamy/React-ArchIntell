@@ -46,7 +46,7 @@ function App() {
               element={isAuth ? <Project /> : <Navigate to="/login" />}
             >
               <Route index element={<Dashboard />} />
-              <Route path="EditePage" element={<EditePage />} />
+              <Route path=":id" element={<EditePage />} />
             </Route>
             <Route path="/post/:postId" element={<CardDetails />} />
           </Routes>

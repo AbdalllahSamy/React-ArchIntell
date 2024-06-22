@@ -87,6 +87,13 @@ const Generator = () => {
 
   const onSubmit = async (e) => {
     e.preventDefault();
+    const regex = /\b(plan|floorplan|floor|room|bathroom|bedroom|living room|kitchen|dining room|sofa|table|chair|window|door|wall|ceiling|furniture)\b/i;
+    if (!regex.test(description)) {
+      toast.error("Please enter valid words", {
+        position: "top-left"
+      });
+      return;
+    }
     setLoading(false);
     try {
       const tokenPromise = localStorage.getItem('token');
